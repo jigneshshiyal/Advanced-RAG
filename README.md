@@ -131,31 +131,3 @@ PowerShell example:
 ```powershell
 curl -H "Content-Type: application/json" -d '{"query":"What does the PDF say about X?"}' http://127.0.0.1:8000/query
 ```
-
-Notes and Troubleshooting
--------------------------
-- Relative import issues: Some modules used relative imports (for example `from .config import GEMINI_API_KEY`). `backend/main.py` inserts the backend directory into `sys.path` so running `uvicorn backend.main:app` from the project root will avoid the "attempted relative import with no known parent package" error. If you run `python backend/main.py` directly from inside the `backend/` directory, you may encounter import errors — prefer running `uvicorn backend.main:app` from the project root.
-
-- Chroma DB: The chroma persistent store is configured in `backend/vectordb.py` and by default stores data under `backend/store_emb`. Ensure that folder is writable.
-
-- Large PDFs: Embedding is batched; the embedding provider may rate-limit or throttle. Check `embedding_model.gemini_embedding_batch` for batch size and sleep settings.
-
-- LLM and embeddings: This project uses Google Gemini via `langchain-google-genai` packages. Ensure your API key has the required access and quota.
-
-- Background processing: Currently, the `/embed_pdf` endpoint processes embeddings synchronously. For large or many files, consider offloading to a background worker or queue and returning an upload job id.
-
-Next steps (suggested)
-----------------------
-- Add `requirements.txt` (if you want I can generate a minimal one based on imports).
-- Make embedding asynchronous / background job.
-- Add tests for endpoints using FastAPI TestClient.
-- Secure the endpoints with API keys or OAuth for production usage.
-
-Contact / Help
----------------
-If you want, I can:
-- Generate a `requirements.txt` pinned to specific versions
-- Add unit/integration tests
-- Wire `k` through to the retriever and add query parameters to the API
-
-Happy to make any of those improvements — tell me which one you want next.
